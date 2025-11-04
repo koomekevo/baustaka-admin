@@ -1,152 +1,201 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Layout from "./Layout";
 
-const Drivers = () => {
+export default function Drivers() {
   const [drivers, setDrivers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [updatingDriverId, setUpdatingDriverId] = useState(null);
-  const [verifyingDriverId, setVerifyingDriverId] = useState(null);
+  const [newDriver, setNewDriver] = useState({ name: "", phone: "", vehicleNumber: "" });
+  const [assignModal, setAssignModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedDriver, setSelectedDriver] = useState(null);
 
-  const fetchDrivers = async () => {
-    try {
-      const res = await fetch("https://vincab-backend.onrender.com/get_all_drivers/");
-      const data = await res.json();
-      setDrivers(data);
-    } catch (error) {
-      console.error("Error fetching drivers:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const API_URL = "http://192.168.100.5:4000/api/drivers";
 
   useEffect(() => {
     fetchDrivers();
   }, []);
 
-  const handleUpdateStatus = async (driverId, newStatus) => {
-    setUpdatingDriverId(driverId);
+  const fetchDrivers = async () => {
     try {
-      const res = await fetch(`https://vincab-backend.onrender.com/update_driver_status/${driverId}/`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      if (res.ok) {
-        fetchDrivers();
-        alert("Driver status updated successfully!");
-      } else {
-        alert("Failed to update driver status.");
-      }
-    } catch (error) {
-      console.error("Error updating status:", error);
-    } finally {
-      setUpdatingDriverId(null);
+      const res = await axios.get(API_URL);
+      setDrivers(res.data.data || []);
+    } catch (err) {
+      console.error("Error fetching drivers:", err);
     }
   };
 
-  const handleVerifyDriver = async (driverId) => {
-    setVerifyingDriverId(driverId);
+  const addDriver = async () => {
     try {
-      const res = await fetch(`https://vincab-backend.onrender.com/update_driver_status/${driverId}/`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ verified: true }),
+      await axios.post(API_URL, newDriver);
+      setNewDriver({ name: "", phone: "", vehicleNumber: "" });
+      fetchDrivers();
+    } catch (err) {
+      console.error("Error adding driver:", err);
+    }
+  };
+
+  const deleteDriver = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+      fetchDrivers();
+    } catch (err) {
+      console.error("Error deleting driver:", err);
+    }
+  };
+
+  const updateStatus = async (id, status) => {
+    try {
+      await axios.put(`${API_URL}/${id}/status`, { status });
+      fetchDrivers();
+    } catch (err) {
+      console.error("Error updating driver status:", err);
+    }
+  };
+
+  const assignDriver = async () => {
+    try {
+      await axios.post(`${API_URL}/assign`, {
+        orderId: selectedOrder,
+        driverId: selectedDriver,
       });
-      if (res.ok) {
-        fetchDrivers();
-        alert("Driver verified successfully!");
-      } else {
-        alert("Failed to verify driver.");
-      }
-    } catch (error) {
-      console.error("Error verifying driver:", error);
-    } finally {
-      setVerifyingDriverId(null);
+      setAssignModal(false);
+      setSelectedDriver(null);
+    } catch (err) {
+      console.error("Error assigning driver:", err);
     }
   };
 
   return (
     <Layout title="Drivers">
-      {loading ? (
-        <p className="text-gray-600">Loading drivers...</p>
-      ) : drivers.length === 0 ? (
-        <p className="text-gray-600">No drivers found.</p>
-      ) : (
-        <div className="overflow-x-auto bg-white rounded-lg shadow">
-          <table className="min-w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-100 text-left">
-                <th className="p-4 border-b">Name</th>
-                <th className="p-4 border-b">Phone</th>
-                <th className="p-4 border-b">Email</th>
-                <th className="p-4 border-b">License</th>
-                <th className="p-4 border-b">Status</th>
-                <th className="p-4 border-b">Verified</th>
-                <th className="p-4 border-b">Actions</th>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">Drivers Management</h2>
+
+      {/* Add Driver Form */}
+      <div className="bg-white p-4 rounded-lg shadow mb-6">
+        <h3 className="text-lg font-semibold mb-3">Add New Driver</h3>
+        <div className="flex flex-wrap gap-3">
+          <input
+            type="text"
+            placeholder="Name"
+            value={newDriver.name}
+            onChange={(e) => setNewDriver({ ...newDriver, name: e.target.value })}
+            className="border rounded p-2 flex-1"
+          />
+          <input
+            type="text"
+            placeholder="Phone"
+            value={newDriver.phone}
+            onChange={(e) => setNewDriver({ ...newDriver, phone: e.target.value })}
+            className="border rounded p-2 flex-1"
+          />
+          <input
+            type="text"
+            placeholder="Vehicle Number"
+            value={newDriver.vehicleNumber}
+            onChange={(e) => setNewDriver({ ...newDriver, vehicleNumber: e.target.value })}
+            className="border rounded p-2 flex-1"
+          />
+          <button
+            onClick={addDriver}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+
+      {/* Drivers Table */}
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-3">All Drivers</h3>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-100 text-gray-700">
+              <th className="p-2 text-left">#</th>
+              <th className="p-2 text-left">Name</th>
+              <th className="p-2 text-left">Phone</th>
+              <th className="p-2 text-left">Vehicle</th>
+              <th className="p-2 text-left">Status</th>
+              <th className="p-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {drivers.map((d, i) => (
+              <tr key={d.id} className="border-b hover:bg-gray-50">
+                <td className="p-2">{i + 1}</td>
+                <td className="p-2">{d.name}</td>
+                <td className="p-2">{d.phone}</td>
+                <td className="p-2">{d.vehicleNumber || "N/A"}</td>
+                <td className="p-2">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs ${
+                      d.status === "available"
+                        ? "bg-green-100 text-green-700"
+                        : d.status === "on_delivery"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    {d.status}
+                  </span>
+                </td>
+                <td className="p-2 space-x-2">
+                  <button
+                    onClick={() => updateStatus(d.id, d.status === "available" ? "inactive" : "available")}
+                    className="text-blue-600 hover:underline"
+                  >
+                    Toggle
+                  </button>
+                  <button
+                    onClick={() => deleteDriver(d.id)}
+                    className="text-red-600 hover:underline"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedOrder(prompt("Enter Order ID to assign"));
+                      setSelectedDriver(d.id);
+                      setAssignModal(true);
+                    }}
+                    className="text-green-600 hover:underline"
+                  >
+                    Assign
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {drivers.map((driver) => (
-                <tr key={driver.id} className="hover:bg-gray-50">
-                  <td className="p-4 border-b flex items-center space-x-3">
-                    <img
-                      src={driver.user.profile_image}
-                      alt={driver.user.full_name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <span>{driver.user.full_name}</span>
-                  </td>
-                  <td className="p-4 border-b">{driver.user.phone_number}</td>
-                  <td className="p-4 border-b">{driver.user.email}</td>
-                  <td className="p-4 border-b">{driver.license_number}</td>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-                  <td className="p-4 border-b">
-                    <select
-                      value={driver.status}
-                      onChange={(e) => handleUpdateStatus(driver.id, e.target.value)}
-                      className="border border-gray-300 rounded p-1 text-sm"
-                    >
-                      <option value="active">Active</option>
-                      <option value="busy">Busy</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
-                  </td>
-
-                  <td className="p-4 border-b">
-                    {driver.verified ? (
-                      <span className="text-green-600 font-medium">Yes</span>
-                    ) : (
-                      <button
-                        onClick={() => handleVerifyDriver(driver.id)}
-                        className="px-2 py-1 bg-blue-600 text-white rounded text-sm"
-                      >
-                        {verifyingDriverId === driver.id ? "Verifying..." : "Verify"}
-                      </button>
-                    )}
-                  </td>
-
-                  <td className="p-4 border-b">
-                    <button
-                      onClick={() => handleUpdateStatus(driver.id, "active")}
-                      className="px-3 py-1 bg-green-500 text-white rounded text-sm mr-2 mb-4"
-                    >
-                      {updatingDriverId === driver.id ? "Updating..." : "Activate"}
-                    </button>
-                    <button
-                      onClick={() => handleUpdateStatus(driver.id, "inactive")}
-                      className="px-3 py-1 bg-gray-500 text-white rounded text-sm"
-                    >
-                      {updatingDriverId === driver.id ? "Updating..." : "Deactivate"}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Assign Modal */}
+      {assignModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">
+              Assign Driver #{selectedDriver}
+            </h3>
+            <p className="text-gray-600 mb-3">
+              Confirm assigning to Order ID: <b>{selectedOrder}</b>
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                className="bg-gray-200 px-4 py-2 rounded"
+                onClick={() => setAssignModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                onClick={assignDriver}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
         </div>
       )}
+    </div>
     </Layout>
   );
-};
-
-export default Drivers;
+}

@@ -8,6 +8,7 @@ import Settings from './Pages/Settings';
 import Signin from './Pages/Signin';
 import Users from './Pages/Users';
 import Payments from './Pages/Payments';
+import Drivers from './Pages/Drivers';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/listings" element={<Listings />} />
         <Route path="/users" element={<Users />} />
+        <Route path="/drivers" element={<Drivers />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/payments" element={<Payments />} />
