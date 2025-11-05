@@ -84,9 +84,9 @@ export default function AdminListings() {
 
                 <div className="mt-3 text-sm text-gray-600">
                   <p className="font-medium text-gray-800">Seller Info:</p>
-                  <p>{item.User?.name || "Unknown"}</p>
-                  <p>{item.User?.email}</p>
-                  <p>{item.User?.phone}</p>
+                  <p>{item.Seller?.name || "Unknown"}</p>
+                  <p>{item.Seller?.email}</p>
+                  <p>{item.Seller?.phone}</p>
                 </div>
 
                 <button

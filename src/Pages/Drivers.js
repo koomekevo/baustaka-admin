@@ -26,8 +26,13 @@ export default function Drivers() {
 
   const addDriver = async () => {
     try {
-      await axios.post(API_URL, newDriver);
-      setNewDriver({ name: "", phone: "", vehicleNumber: "" });
+       const res = await axios.post(API_URL, newDriver);
+       if (res.data.success) {
+        alert("Driver added successfully");
+      }else{
+        alert("Driver not added");
+      }
+      setNewDriver({ name: "", phone: "", truckNumber: "", email: "", licenceNumber: "" });
       fetchDrivers();
     } catch (err) {
       console.error("Error adding driver:", err);
@@ -36,7 +41,12 @@ export default function Drivers() {
 
   const deleteDriver = async (id) => {
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      const res = await axios.delete(`${API_URL}/${id}`);
+      if (res.data.success) {
+        alert("Driver deleted successfully");
+      }else{
+        alert("Driver not deleted");
+      }
       fetchDrivers();
     } catch (err) {
       console.error("Error deleting driver:", err);
@@ -89,10 +99,24 @@ export default function Drivers() {
             className="border rounded p-2 flex-1"
           />
           <input
+            type="email"
+            placeholder="Email"
+            value={newDriver.email}
+            onChange={(e) => setNewDriver({ ...newDriver, email: e.target.value })}
+            className="border rounded p-2 flex-1"
+          />
+          <input
             type="text"
-            placeholder="Vehicle Number"
-            value={newDriver.vehicleNumber}
-            onChange={(e) => setNewDriver({ ...newDriver, vehicleNumber: e.target.value })}
+            placeholder="licence number"
+            value={newDriver.licenceNumber}
+            onChange={(e) => setNewDriver({ ...newDriver, licenceNumber: e.target.value })}
+            className="border rounded p-2 flex-1"
+          />
+          <input
+            type="text"
+            placeholder="Truck Number"
+            value={newDriver.truckNumber}
+            onChange={(e) => setNewDriver({ ...newDriver, truckNumber: e.target.value })}
             className="border rounded p-2 flex-1"
           />
           <button
@@ -124,7 +148,7 @@ export default function Drivers() {
                 <td className="p-2">{i + 1}</td>
                 <td className="p-2">{d.name}</td>
                 <td className="p-2">{d.phone}</td>
-                <td className="p-2">{d.vehicleNumber || "N/A"}</td>
+                <td className="p-2">{d.truckNumber || "N/A"}</td>
                 <td className="p-2">
                   <span
                     className={`px-3 py-1 rounded-full text-xs ${
