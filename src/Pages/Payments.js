@@ -11,7 +11,7 @@ const Payments = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const res = await fetch("https://vincab-backend.onrender.com/get_all_payments/");
+        const res = await fetch("https://baustaka-backend.onrender.com/api/payments/all");
         const data = await res.json();
         setPayments(data);
       } catch (error) {
@@ -41,8 +41,8 @@ const Payments = () => {
                 <thead>
                   <tr className="bg-gray-100 text-left">
                     <th className="p-2">Transaction ID</th>
-                    <th className="p-2">Rider</th>
-                    <th className="p-2">Driver</th>
+                    <th className="p-2">Buyer</th>
+                    <th className="p-2">Seller</th>
                     <th className="p-2">Amount (KES)</th>
                     <th className="p-2">Method</th>
                     <th className="p-2">Status</th>
@@ -72,8 +72,8 @@ const Payments = () => {
                         <td className="p-2">
                           {payment.transaction_reference || `TXN-${payment.id}`}
                         </td>
-                        <td className="p-2">{payment.rider_name}</td>
-                        <td className="p-2">{payment.driver_name}</td>
+                        <td className="p-2">{payment.buyer_name}</td>
+                        <td className="p-2">{payment.seller_name}</td>
                         <td className="p-2 font-semibold">
                           {parseFloat(payment.amount).toFixed(2)}
                         </td>

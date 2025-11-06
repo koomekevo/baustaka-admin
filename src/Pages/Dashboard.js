@@ -28,7 +28,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get("https://vincab-backend.onrender.com/dashboard_stats/");
+        const res = await axios.get("https://baustaka-backend.onrender.com/api/dashboard/stats");
         setStats(res.data);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
@@ -64,12 +64,12 @@ function Dashboard() {
           <p className="text-2xl font-bold text-green-600">{stats.total_drivers}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold">Total Riders</h2>
-          <p className="text-2xl font-bold text-green-600">{stats.total_riders}</p>
+          <h2 className="text-lg font-semibold">Total Users</h2>
+          <p className="text-2xl font-bold text-green-600">{stats.total_users}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold">Total Rides</h2>
-          <p className="text-2xl font-bold text-green-600">{stats.total_rides}</p>
+          <h2 className="text-lg font-semibold">Total Orders</h2>
+          <p className="text-2xl font-bold text-green-600">{stats.total_orders}</p>
         </div>
       </div>
 

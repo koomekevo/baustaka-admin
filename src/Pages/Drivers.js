@@ -9,7 +9,7 @@ export default function Drivers() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
 
-  const API_URL = "http://192.168.100.5:4000/api/drivers";
+  const API_URL = "https://baustaka-backend.onrender.com/api/drivers";
 
   useEffect(() => {
     fetchDrivers();

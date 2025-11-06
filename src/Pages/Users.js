@@ -12,7 +12,7 @@ export default function Users() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://192.168.100.5:4000/api/users"); // ✅ adjust to your endpoint
+      const res = await axios.get("https://baustaka-backend.onrender.com/api/users"); // ✅ adjust to your endpoint
       setUsers(res.data.users || res.data.data || []);
     } catch (err) {
       console.error("❌ Error fetching users:", err);
@@ -24,7 +24,7 @@ export default function Users() {
   const handleDeleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      await axios.delete(`http://192.168.100.5:4000/api/users/${id}`);
+      await axios.delete(`https://baustaka-backend.onrender.com/api/users/${id}`);
       setUsers(users.filter((u) => u.id !== id));
       alert("✅ User deleted successfully");
     } catch (err) {
@@ -35,9 +35,11 @@ export default function Users() {
 
   if (loading)
     return (
+      <Layout title="Users">
       <div className="flex items-center justify-center h-screen">
         <p className="text-gray-500 text-lg animate-pulse">Loading users...</p>
       </div>
+      </Layout>
     );
 
   return (

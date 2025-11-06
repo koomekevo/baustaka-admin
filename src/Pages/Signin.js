@@ -11,37 +11,41 @@ const Signin = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-    try {
-      const response = await axios.post("https://vincab-backend.onrender.com/signin/", {
-        email,
-        password,
-      });
-      if(response.data.role !== 'admin'){
-        setError("Access denied. Admins only.");
-        setLoading(false);
-        return;
-      }
+  try {
+    const response = await axios.post("https://baustaka-backend.onrender.com/api/admin/login", {
+      email,
+      password,
+    });
 
-      // Save token & user info to localStorage
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data));
+    const { token, admin } = response.data;
 
-      navigate("/dashboard"); // redirect to dashboard
-    } catch (err) {
-      console.error(err);
-      if (err.response) {
-        setError(err.response.data.message || "Login failed");
-      } else {
-        setError("Network error. Try again.");
-      }
-    } finally {
+    if (!admin || (admin.role !== "superadmin" && admin.role !== "manager")) {
+      setError("Access denied. Admins only.");
       setLoading(false);
+      return;
     }
-  };
+
+    // ✅ Save token & user info
+    localStorage.setItem("token", token);
+    localStorage.setItem("admin", JSON.stringify(admin));
+
+    navigate("/dashboard"); // redirect to dashboard
+  } catch (err) {
+    console.error("Login error:", err);
+    if (err.response) {
+      setError(err.response.data.message || "Invalid credentials");
+    } else {
+      setError("Network error. Try again.");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-600 to-green-800">

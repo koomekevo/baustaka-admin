@@ -12,7 +12,7 @@ export default function AdminListings() {
 
   const fetchListings = async () => {
     try {
-      const res = await axios.get("http://192.168.100.5:4000/api/listings/all");
+      const res = await axios.get("https://baustaka-backend.onrender.com/api/listings/all");
       setListings(res.data.listings || []);
     } catch (err) {
       console.error("❌ Error fetching listings:", err);
@@ -25,7 +25,7 @@ export default function AdminListings() {
     if (!window.confirm("Are you sure you want to delete this listing?")) return;
 
     try {
-      await axios.delete(`http://192.168.100.5:4000/api/listings/delete/${id}`);
+      await axios.delete(`https://baustaka-backend.onrender.com/api/listings/delete/${id}`);
       setListings(listings.filter((l) => l.id !== id));
       alert("✅ Listing deleted successfully!");
     } catch (err) {

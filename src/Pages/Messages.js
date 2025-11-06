@@ -10,7 +10,7 @@ export default function Messages() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get("http://192.168.100.5:4000/api/chat/all/9");
+        const res = await axios.get("https://baustaka-backend.onrender.com/api/chat/all/9");
         // ✅ use res.data.data instead of res.data
         setMsgs(res.data.data || []);
       } catch (err) {
@@ -24,13 +24,13 @@ export default function Messages() {
   const handleReply = async (messageId) => {
     if (!reply.trim()) return alert("Please type a reply first.");
     try {
-      await axios.post(`http://192.168.100.5:4000/api/chat/respond`, {
+      await axios.post(`https://baustaka-backend.onrender.com/api/chat/respond`, {
         messageId,
         response: reply,
       });
 
       // Update messages after reply
-      const res = await axios.get("http://192.168.100.5:4000/api/chat/all/9");
+      const res = await axios.get("https://baustaka-backend.onrender.com/api/chat/all/9");
       setMsgs(res.data.data || []);
       setReply("");
     } catch (err) {

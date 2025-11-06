@@ -9,7 +9,7 @@ export default function OrdersDashboard() {
   const [selectedDriver, setSelectedDriver] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  const API = "http://192.168.100.5:4000/api/drivers";
+  const API = "https://baustaka-backend.onrender.com/api/drivers";
 
   useEffect(() => {
     fetchOrders();
