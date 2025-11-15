@@ -11,7 +11,7 @@ const Payments = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const res = await fetch("https://baustaka-backend.onrender.com/api/payments/all");
+        const res = await fetch("http://192.168.100.5:5363/v1/payments/");
         const data = await res.json();
         setPayments(data);
       } catch (error) {
@@ -70,31 +70,34 @@ const Payments = () => {
                         className="border-b hover:bg-gray-50 transition"
                       >
                         <td className="p-2">
-                          {payment.transaction_reference || `TXN-${payment.id}`}
+                          {payment.transaction_reference || `${payment._id}`}
                         </td>
-                        <td className="p-2">{payment.buyer_name}</td>
-                        <td className="p-2">{payment.seller_name}</td>
+                        <td className="p-2">{payment.buyer != null ? payment.buyer.displayName : "Buyer"}</td>
+                        <td className="p-2">{payment.seller != null ? payment.seller.displayName : "Seller"}</td>
                         <td className="p-2 font-semibold">
                           {parseFloat(payment.amount).toFixed(2)}
                         </td>
-                        <td className="p-2">{payment.method}</td>
+                        <td className="p-2">{payment.paymentMethod}</td>
                         <td className="p-2">
                           <span
                             className={`px-2 py-1 rounded text-white text-xs font-medium
                               ${
-                                payment.status === "success"
+                                payment.paymentStatus === "success"
                                   ? "bg-green-600"
-                                  : payment.status === "pending"
+                                  : payment.paymentStatus === "pending"
                                   ? "bg-yellow-500"
-                                  : "bg-red-600"
+                                  : payment.paymentStatus === "failed"
+                                  ? "bg-red-600"
+                                  : "bg-gray-500"
+
                               }`}
                           >
-                            {payment.status}
+                            {payment.paymentStatus}
                           </span>
                         </td>
                         <td className="p-2">
-                          {payment.paid_at
-                            ? new Date(payment.paid_at).toLocaleDateString()
+                          {payment.createdAt
+                            ? new Date(payment.createdAt).toLocaleDateString()
                             : "-"}
                         </td>
                         <td className="p-2">

@@ -9,7 +9,8 @@ export default function OrdersDashboard() {
   const [selectedDriver, setSelectedDriver] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  const API = "https://baustaka-backend.onrender.com/api/drivers";
+  const API = "http://192.168.100.5:5363/v1/orders";
+  const API_URL_DRIVER = "http://192.168.100.5:5363/v1/drivers/";
 
   useEffect(() => {
     fetchOrders();
@@ -18,8 +19,8 @@ export default function OrdersDashboard() {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get(`${API}/undelivered-orders`);
-      setOrders(res.data.data || []);
+      const res = await axios.get(`${API}/`);
+      setOrders(res.data || []);
     } catch (err) {
       console.error("Error fetching orders:", err);
     }
@@ -27,8 +28,8 @@ export default function OrdersDashboard() {
 
   const fetchDrivers = async () => {
     try {
-      const res = await axios.get(`${API}`);
-      setDrivers(res.data.data || []);
+      const res = await axios.get(`${API_URL_DRIVER}`);
+      setDrivers(res.data || []);
     } catch (err) {
       console.error("Error fetching drivers:", err);
     }
@@ -36,10 +37,7 @@ export default function OrdersDashboard() {
 
   const assignDriver = async () => {
     try {
-      await axios.post(`${API}/assign-order`, {
-        orderId: selectedOrder.id,
-        driverId: selectedDriver,
-      });
+      await axios.put(`${API}/assign-driver/${selectedOrder._id}/${selectedDriver}`);
       setShowModal(false);
       setSelectedOrder(null);
       fetchOrders();
@@ -69,7 +67,7 @@ export default function OrdersDashboard() {
             {orders.map((order, i) => (
               <tr key={order.id} className="border-b hover:bg-gray-50">
                 <td className="p-2">{i + 1}</td>
-                <td className="p-2">{order.Buyer?.name || "Unknown"}</td>
+                <td className="p-2">{order._id || "Unknown"}</td>
                 <td className="p-2">Ksh. {order.totalPrice}</td>
                 <td className="p-2">
                   <span
@@ -85,7 +83,7 @@ export default function OrdersDashboard() {
                   </span>
                 </td>
                 <td className="p-2">
-                  {order.Driver ? order.Driver.name : <i>Not assigned</i>}
+                  {order.driver ? order.driver.name : <i>Not assigned</i>}
                 </td>
                 <td className="p-2">
                   <button
@@ -115,7 +113,7 @@ export default function OrdersDashboard() {
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
           <div className="bg-white rounded-lg shadow-lg p-6 w-96">
             <h3 className="text-lg font-semibold mb-4">
-              Assign Driver for Order #{selectedOrder?.id}
+              Assign Driver for Order #{selectedOrder?._id}
             </h3>
 
             <select
@@ -125,7 +123,7 @@ export default function OrdersDashboard() {
             >
               <option value="">Select Driver</option>
               {drivers.map((d) => (
-                <option key={d.id} value={d.id}>
+                <option key={d._id} value={d._id}>
                   {d.name} ({d.status})
                 </option>
               ))}

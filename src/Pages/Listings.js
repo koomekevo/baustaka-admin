@@ -5,6 +5,8 @@ import Layout from "./Layout";
 export default function AdminListings() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("adminIdToken");
+  const BASE_URL = "http://192.168.100.5:5363";
 
   useEffect(() => {
     fetchListings();
@@ -12,10 +14,15 @@ export default function AdminListings() {
 
   const fetchListings = async () => {
     try {
-      const res = await axios.get("https://baustaka-backend.onrender.com/api/listings/all");
-      setListings(res.data.listings || []);
+      const res = await axios.get("http://192.168.100.5:5363/v1/listings/",{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+
+      });
+      setListings(res.data || []);
     } catch (err) {
-      console.error("❌ Error fetching listings:", err);
+      console.error("Error fetching listings:", err);
     } finally {
       setLoading(false);
     }
@@ -25,8 +32,8 @@ export default function AdminListings() {
     if (!window.confirm("Are you sure you want to delete this listing?")) return;
 
     try {
-      await axios.delete(`https://baustaka-backend.onrender.com/api/listings/delete/${id}`);
-      setListings(listings.filter((l) => l.id !== id));
+      await axios.delete(`${BASE_URL}/v1/listings/${id}`);
+      setListings(listings.filter((l) => l._id !== id));
       alert("✅ Listing deleted successfully!");
     } catch (err) {
       console.error("❌ Error deleting listing:", err);
@@ -58,7 +65,7 @@ export default function AdminListings() {
               className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
             >
               <img
-                src={item.image}
+                src={`${BASE_URL}${item.image}`}
                 alt={item.title}
                 className="h-48 w-full object-cover"
                 onError={(e) => (e.target.src = "/placeholder.jpg")}
@@ -82,15 +89,8 @@ export default function AdminListings() {
                   </p>
                 </div>
 
-                <div className="mt-3 text-sm text-gray-600">
-                  <p className="font-medium text-gray-800">Seller Info:</p>
-                  <p>{item.Seller?.name || "Unknown"}</p>
-                  <p>{item.Seller?.email}</p>
-                  <p>{item.Seller?.phone}</p>
-                </div>
-
                 <button
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => handleDelete(item._id)}
                   className="mt-auto bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition-all duration-200 ease-in-out"
                 >
                   Delete Listing

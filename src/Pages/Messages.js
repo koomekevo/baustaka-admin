@@ -10,7 +10,7 @@ export default function Messages() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get("https://baustaka-backend.onrender.com/api/chat/all/9");
+        const res = await axios.get("http://192.168.100.5:5363/v1/chat/message/691354485a8d844ee5ff88ad");
         // ✅ use res.data.data instead of res.data
         setMsgs(res.data.data || []);
       } catch (err) {
@@ -24,13 +24,13 @@ export default function Messages() {
   const handleReply = async (messageId) => {
     if (!reply.trim()) return alert("Please type a reply first.");
     try {
-      await axios.post(`https://baustaka-backend.onrender.com/api/chat/respond`, {
+      await axios.post(`http://192.168.100.5:5363/v1/chat/respond`, {
         messageId,
         response: reply,
       });
 
       // Update messages after reply
-      const res = await axios.get("https://baustaka-backend.onrender.com/api/chat/all/9");
+      const res = await axios.get("http://192.168.100.5:5363/v1/chat/message/691354485a8d844ee5ff88ad");
       setMsgs(res.data.data || []);
       setReply("");
     } catch (err) {
@@ -58,7 +58,7 @@ export default function Messages() {
             }}
           >
             <div>
-              <b>From:</b> {m.User?.name || `User ${m.senderId}`}
+              <b>From:</b> {m.sender.email || `User ${m.senderId}`}
             </div>
             <div>
               <b>Message:</b> {m.message}
@@ -88,7 +88,7 @@ export default function Messages() {
                 }}
               />
               <button
-                onClick={() => handleReply(m.id)}
+                onClick={() => handleReply(m._id)}
                 style={{
                   backgroundColor: "#16a34a",
                   color: "#fff",

@@ -9,7 +9,7 @@ export default function Drivers() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
 
-  const API_URL = "https://baustaka-backend.onrender.com/api/drivers";
+  const API_URL = "http://192.168.100.5:5363/v1/drivers/";
 
   useEffect(() => {
     fetchDrivers();
@@ -18,7 +18,7 @@ export default function Drivers() {
   const fetchDrivers = async () => {
     try {
       const res = await axios.get(API_URL);
-      setDrivers(res.data.data || []);
+      setDrivers(res.data || []);
     } catch (err) {
       console.error("Error fetching drivers:", err);
     }
@@ -27,7 +27,7 @@ export default function Drivers() {
   const addDriver = async () => {
     try {
        const res = await axios.post(API_URL, newDriver);
-       if (res.data.success) {
+       if (res.status === 200) {
         alert("Driver added successfully");
       }else{
         alert("Driver not added");
@@ -41,8 +41,8 @@ export default function Drivers() {
 
   const deleteDriver = async (id) => {
     try {
-      const res = await axios.delete(`${API_URL}/${id}`);
-      if (res.data.success) {
+      const res = await axios.delete(`${API_URL}${id}`);
+      if (res.status === 200) {
         alert("Driver deleted successfully");
       }else{
         alert("Driver not deleted");
@@ -53,14 +53,14 @@ export default function Drivers() {
     }
   };
 
-  const updateStatus = async (id, status) => {
-    try {
-      await axios.put(`${API_URL}/${id}/status`, { status });
-      fetchDrivers();
-    } catch (err) {
-      console.error("Error updating driver status:", err);
-    }
-  };
+  // const updateStatus = async (id, status) => {
+  //   try {
+  //     await axios.put(`${API_URL}/${id}/status`, { status });
+  //     fetchDrivers();
+  //   } catch (err) {
+  //     console.error("Error updating driver status:", err);
+  //   }
+  // };
 
   const assignDriver = async () => {
     try {
@@ -163,27 +163,17 @@ export default function Drivers() {
                   </span>
                 </td>
                 <td className="p-2 space-x-2">
-                  <button
-                    onClick={() => updateStatus(d.id, d.status === "available" ? "inactive" : "available")}
+                  {/* <button
+                    onClick={() => updateStatus(d._id, d.status === "available" ? "inactive" : "available")}
                     className="text-blue-600 hover:underline"
                   >
                     Toggle
-                  </button>
+                  </button> */}
                   <button
-                    onClick={() => deleteDriver(d.id)}
+                    onClick={() => deleteDriver(d._id)}
                     className="text-red-600 hover:underline"
                   >
                     Delete
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSelectedOrder(prompt("Enter Order ID to assign"));
-                      setSelectedDriver(d.id);
-                      setAssignModal(true);
-                    }}
-                    className="text-green-600 hover:underline"
-                  >
-                    Assign
                   </button>
                 </td>
               </tr>
@@ -192,33 +182,6 @@ export default function Drivers() {
         </table>
       </div>
 
-      {/* Assign Modal */}
-      {assignModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">
-              Assign Driver #{selectedDriver}
-            </h3>
-            <p className="text-gray-600 mb-3">
-              Confirm assigning to Order ID: <b>{selectedOrder}</b>
-            </p>
-            <div className="flex justify-end space-x-3">
-              <button
-                className="bg-gray-200 px-4 py-2 rounded"
-                onClick={() => setAssignModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                onClick={assignDriver}
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
     </Layout>
   );

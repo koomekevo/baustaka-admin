@@ -9,12 +9,16 @@ import Signin from './Pages/Signin';
 import Users from './Pages/Users';
 import Payments from './Pages/Payments';
 import Drivers from './Pages/Drivers';
+import AdminSignin from './Pages/AdminSignin';
+import AdminSignup from './Pages/AdminSignup';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Signin />} />
+        <Route path="/" element={<AdminSignin />} />
+        <Route path="/signup" element={<AdminSignup />} />
+        <Route path="/signin" element={<Signin />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/listings" element={<Listings />} />
         <Route path="/users" element={<Users />} />

@@ -15,8 +15,8 @@ import {
 function Dashboard() {
   const [stats, setStats] = useState({
     total_drivers: 0,
-    total_riders: 0,
-    total_rides: 0,
+    total_users: 0,
+    total_orders: 0,
     daily_earnings: 0,
     weekly_earnings: 0,
     monthly_earnings: 0,
@@ -28,8 +28,8 @@ function Dashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get("https://baustaka-backend.onrender.com/api/dashboard/stats");
-        setStats(res.data);
+        const res = await axios.get("http://192.168.100.5:5363/v1/dashboard/stats");
+        setStats(res.data.stats);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
       } finally {

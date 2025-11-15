@@ -12,8 +12,8 @@ export default function Users() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("https://baustaka-backend.onrender.com/api/users"); // ✅ adjust to your endpoint
-      setUsers(res.data.users || res.data.data || []);
+      const res = await axios.get("http://192.168.100.5:5363/v1/users/"); // ✅ adjust to your endpoint
+      setUsers(res.data.users || res.data.users || []);
     } catch (err) {
       console.error("❌ Error fetching users:", err);
     } finally {
@@ -24,11 +24,11 @@ export default function Users() {
   const handleDeleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      await axios.delete(`https://baustaka-backend.onrender.com/api/users/${id}`);
+      await axios.delete(`http://192.168.100.5:5363/v1/users/${id}`);
       setUsers(users.filter((u) => u.id !== id));
-      alert("✅ User deleted successfully");
+      alert("User deleted successfully");
     } catch (err) {
-      console.error("❌ Error deleting user:", err);
+      console.error("Error deleting user:", err);
       alert("Failed to delete user");
     }
   };
@@ -58,26 +58,26 @@ export default function Users() {
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Phone</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Location</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Points</th>
                 <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.map((u, i) => (
                 <tr
-                  key={u.id}
+                  key={u._id}
                   className="border-b hover:bg-gray-50 transition-colors duration-150"
                 >
-                  <td className="px-6 py-3 text-sm text-gray-700">{i + 1}</td>
+                  <td className="px-6 py-3 text-sm text-gray-700">{u._id}</td>
                   <td className="px-6 py-3 text-sm font-medium text-gray-800">
-                    {u.name || "—"}
+                    {u.displayName || "—"}
                   </td>
                   <td className="px-6 py-3 text-sm text-gray-600">{u.email}</td>
-                  <td className="px-6 py-3 text-sm text-gray-600">{u.phone}</td>
-                  <td className="px-6 py-3 text-sm text-gray-600">{u.locationName || "—"}</td>
+                  <td className="px-6 py-3 text-sm text-gray-600">{u.phoneNumber}</td>
+                  <td className="px-6 py-3 text-sm text-gray-600">{u.points || "0"}</td>
                   <td className="px-6 py-3 text-center">
                     <button
-                      onClick={() => handleDeleteUser(u.id)}
+                      onClick={() => handleDeleteUser(u._id)}
                       className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm transition-all"
                     >
                       Delete
